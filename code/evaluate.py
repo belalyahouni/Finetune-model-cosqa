@@ -51,7 +51,6 @@ print(f"Corpus loaded with {len(corpus_dataset)} documents.")
 queries_dataset = load_dataset("CoIR-Retrieval/cosqa", "queries", split="queries")
 print(f"Queries loaded with {len(queries_dataset)} queries.")
 
-
 # Load in test set.
 eval_dataset = load_dataset("CoIR-Retrieval/cosqa", name="default", split="test")
 print(f"Evaluation 'test' split loaded with {len(eval_dataset)} query-document pairs.")

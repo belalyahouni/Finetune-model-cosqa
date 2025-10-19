@@ -3,7 +3,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from pydantic import BaseModel
 from typing import List
 import fitz
-# import files
+
 from search_engine import Search
 
 class Document(BaseModel):

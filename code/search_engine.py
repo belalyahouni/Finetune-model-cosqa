@@ -19,6 +19,7 @@ class Search:
         # Load the pretrained model from Hugging Face
         print("Loading model...")
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.model = SentenceTransformer('fine_tuned_model_triple/checkpoint-2452')
         print("Model loaded.")
 
     def index(self, documents: List[str], doc_ids: Optional[List[str]] = None):
