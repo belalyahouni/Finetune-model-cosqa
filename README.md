@@ -35,7 +35,7 @@ Evaluate the model using Recall@10, MRR@10, and nDCG@10 (evaluate.py, part_2.ipy
 
 ## ⚙️ Installation
 1. Clone the Repository
-git clone https://github.com/yourusername/semantic-search-engine.git
+git clone https://github.com/belalyahouni/ML-for-Context-in-AI-Assistant
 cd semantic-search-engine
 
 3. Create and Activate a Virtual Environment
