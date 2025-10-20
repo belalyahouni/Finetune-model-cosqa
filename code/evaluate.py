@@ -71,7 +71,7 @@ def evaluate_model(model_name: str = "all-MiniLM-L6-v2"):
     search_instance.index(documents=documents, doc_ids=doc_ids)
     print("\nIndexing complete! Your search engine is ready.")
 
-    # --- Main Evaluation Loop ---
+    # Evaluation Loop
 
     print("\n--- Starting Search Loop for Evaluation ---")
 
@@ -85,9 +85,9 @@ def evaluate_model(model_name: str = "all-MiniLM-L6-v2"):
     test_query_ids = sorted(list(ground_truth.keys()))
     print(f"Found {len(test_query_ids)} unique queries to test.")
 
-    # 3. Initialize the Search class (this will load the pre-built index)
+    # Initialize the Search class (this will load the pre-built index)
 
-    # 4. Loop through the first 5 queries and print the IDs found
+    # Loop through the first 5 queries and print the IDs found
     for i, query_id in enumerate(test_query_ids):
         query_text = queries_map.get(query_id)
         if not query_text:
@@ -106,7 +106,7 @@ def evaluate_model(model_name: str = "all-MiniLM-L6-v2"):
         if (i + 1) % 50 == 0:
             print(f"  ...processed {i+1}/{len(test_query_ids)} queries")
         
-    # --- Calculate and print the final average scores ---
+    # Calculate and print the final average scores 
     if recall_scores:
         final_recall = np.mean(recall_scores)
         final_mrr = np.mean(mrr_scores)
@@ -117,6 +117,7 @@ def evaluate_model(model_name: str = "all-MiniLM-L6-v2"):
         print(f"Recall@10: {final_recall:.4f}")
         print(f"MRR@10:    {final_mrr:.4f}")
         print(f"nDCG@10:   {final_ndcg:.4f}")
+        return final_recall, final_mrr, final_ndcg
 
     else:
         print("\nEvaluation could not be completed.")
