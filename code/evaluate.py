@@ -44,79 +44,86 @@ def calculate_ndcg_at_10(found_ids: List[str], correct_ids: Set[str]) -> float:
     return dcg / idcg if idcg > 0 else 0.0
 
 # Load Corupus in
-corpus_dataset = load_dataset("CoIR-Retrieval/cosqa", "corpus", split="corpus")
-print(f"Corpus loaded with {len(corpus_dataset)} documents.")
+def evaluate_model(model_name: str = "all-MiniLM-L6-v2"):
+    corpus_dataset = load_dataset("CoIR-Retrieval/cosqa", "corpus", split="corpus")
+    print(f"Corpus loaded with {len(corpus_dataset)} documents.")
 
-# Load the queries
-queries_dataset = load_dataset("CoIR-Retrieval/cosqa", "queries", split="queries")
-print(f"Queries loaded with {len(queries_dataset)} queries.")
+    # Load the queries
+    queries_dataset = load_dataset("CoIR-Retrieval/cosqa", "queries", split="queries")
+    print(f"Queries loaded with {len(queries_dataset)} queries.")
 
-# Load in test set.
-eval_dataset = load_dataset("CoIR-Retrieval/cosqa", name="default", split="test")
-print(f"Evaluation 'test' split loaded with {len(eval_dataset)} query-document pairs.")
+    # Load in test set.
+    eval_dataset = load_dataset("CoIR-Retrieval/cosqa", name="default", split="test")
+    print(f"Evaluation 'test' split loaded with {len(eval_dataset)} query-document pairs.")
 
-documents = [item['text'] for item in corpus_dataset]
-doc_ids = [item['_id'] for item in corpus_dataset]
+    documents = [item['text'] for item in corpus_dataset]
+    doc_ids = [item['_id'] for item in corpus_dataset]
 
-# Initialise Search class object
-search_instance = Search()
-# Initilaise score arrays.
-recall_scores = []
-mrr_scores = []
-ndcg_scores = []
-# Index the Corpus
+    # Initialise Search class object
+    search_instance = Search(model_name)
+    # Initilaise score arrays.
+    recall_scores = []
+    mrr_scores = []
+    ndcg_scores = []
+    # Index the Corpus
 
-print("Building the search index... (This may take a while)")
-search_instance.index(documents=documents, doc_ids=doc_ids)
-print("\nIndexing complete! Your search engine is ready.")
+    print("Building the search index... (This may take a while)")
+    search_instance.index(documents=documents, doc_ids=doc_ids)
+    print("\nIndexing complete! Your search engine is ready.")
 
-# --- Main Evaluation Loop ---
+    # --- Main Evaluation Loop ---
 
-print("\n--- Starting Search Loop for Evaluation ---")
+    print("\n--- Starting Search Loop for Evaluation ---")
 
-# Reconstruct the dataset as a dictionary for ease of use.
-queries_map = {item['_id']: item['text'] for item in queries_dataset}
+    # Reconstruct the dataset as a dictionary for ease of use.
+    queries_map = {item['_id']: item['text'] for item in queries_dataset}
 
-ground_truth = defaultdict(set)
-for item in eval_dataset:
-    ground_truth[item['query-id']].add(item['corpus-id'])
+    ground_truth = defaultdict(set)
+    for item in eval_dataset:
+        ground_truth[item['query-id']].add(item['corpus-id'])
 
-test_query_ids = sorted(list(ground_truth.keys()))
-print(f"Found {len(test_query_ids)} unique queries to test.")
+    test_query_ids = sorted(list(ground_truth.keys()))
+    print(f"Found {len(test_query_ids)} unique queries to test.")
 
-# 3. Initialize the Search class (this will load the pre-built index)
-search_instance = Search()
+    # 3. Initialize the Search class (this will load the pre-built index)
 
-# 4. Loop through the first 5 queries and print the IDs found
-for i, query_id in enumerate(test_query_ids):
-    query_text = queries_map.get(query_id)
-    if not query_text:
-        continue
+    # 4. Loop through the first 5 queries and print the IDs found
+    for i, query_id in enumerate(test_query_ids):
+        query_text = queries_map.get(query_id)
+        if not query_text:
+            continue
+            
+        # Get the set of all correct doc IDs for this query
+        correct_doc_ids = ground_truth[query_id]
+        # Call search with return_ids=True to get a list of found document IDs
+        found_doc_ids = search_instance.search(query=query_text, top_k=10, return_ids=True, print_search = False)
+
+        recall_scores.append(calculate_recall_at_10(found_doc_ids, correct_doc_ids))
+        mrr_scores.append(calculate_mrr_at_10(found_doc_ids, correct_doc_ids))
+        ndcg_scores.append(calculate_ndcg_at_10(found_doc_ids, correct_doc_ids))
+
+        # Print progress intermittently
+        if (i + 1) % 50 == 0:
+            print(f"  ...processed {i+1}/{len(test_query_ids)} queries")
         
-    # Get the set of all correct doc IDs for this query
-    correct_doc_ids = ground_truth[query_id]
-    # Call search with return_ids=True to get a list of found document IDs
-    found_doc_ids = search_instance.search(query=query_text, top_k=10, return_ids=True)
+    # --- Calculate and print the final average scores ---
+    if recall_scores:
+        final_recall = np.mean(recall_scores)
+        final_mrr = np.mean(mrr_scores)
+        final_ndcg = np.mean(ndcg_scores)
+        
+        print("\n\n✅ Evaluation complete.")
+        print("\n--- FINAL RESULTS ---")
+        print(f"Recall@10: {final_recall:.4f}")
+        print(f"MRR@10:    {final_mrr:.4f}")
+        print(f"nDCG@10:   {final_ndcg:.4f}")
 
-    recall_scores.append(calculate_recall_at_10(found_doc_ids, correct_doc_ids))
-    mrr_scores.append(calculate_mrr_at_10(found_doc_ids, correct_doc_ids))
-    ndcg_scores.append(calculate_ndcg_at_10(found_doc_ids, correct_doc_ids))
+    else:
+        print("\nEvaluation could not be completed.")
 
-    # Print progress intermittently
-    if (i + 1) % 50 == 0:
-        print(f"  ...processed {i+1}/{len(test_query_ids)} queries")
-    
-# --- Calculate and print the final average scores ---
-if recall_scores:
-    final_recall = np.mean(recall_scores)
-    final_mrr = np.mean(mrr_scores)
-    final_ndcg = np.mean(ndcg_scores)
-    
-    print("\n\n✅ Evaluation complete.")
-    print("\n--- FINAL RESULTS ---")
-    print(f"Recall@10: {final_recall:.4f}")
-    print(f"MRR@10:    {final_mrr:.4f}")
-    print(f"nDCG@10:   {final_ndcg:.4f}")
+def main():
+    model_name = 'fine_tuned_model_multiple/checkpoint-1226'
+    evaluate_model(model_name)
 
-else:
-    print("\nEvaluation could not be completed.")
+if __name__ == "__main__":
+    main()

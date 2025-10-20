@@ -3,11 +3,11 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from usearch.index import Index
 import json
-from typing import List, Optional # FIXED: Import Optional
+from typing import List, Optional
 import os
 
 class Search:
-    def __init__(self):
+    def __init__(self, model_name: Optional[str] = "all-MiniLM-L6-v2"):
         """
         Defines the constants and loads the model.
         """
@@ -17,10 +17,10 @@ class Search:
         self.VECTOR_SIZE = 384
 
         # Load the pretrained model from Hugging Face
-        print("Loading model...")
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.model = SentenceTransformer('fine_tuned_model_triple/checkpoint-2452')
-        print("Model loaded.")
+        print(f"Loading {model_name} model ...")
+        self.model = SentenceTransformer(model_name)
+
+
 
     def index(self, documents: List[str], doc_ids: Optional[List[str]] = None):
         """
@@ -59,7 +59,7 @@ class Search:
             json.dump(data_to_save, f)
         print(f"Document map saved to {self.DOCUMENTS_PATH}")
 
-    def search(self, query: str, top_k: int = 1, return_ids: bool = False) -> List[str]:
+    def search(self, query: str, top_k: int = 1, return_ids: bool = False, print_search: bool = True) -> List[str]:
         """
         Searches the embeddings, finds cos similarity matches, looks at the path in json, returns it.
         """
@@ -78,7 +78,8 @@ class Search:
         document_map = saved_data['document_map']
 
         # Encode query
-        print(f"Searching for: '{query}'")
+        if print_search == True:
+            print(f"Searching for: '{query}'")
         query_embedding = self.model.encode(query).astype(np.float32).reshape(1, -1)
 
         # Perform search
