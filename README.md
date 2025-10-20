@@ -3,6 +3,7 @@ This project implements a semantic search engine that allows users to upload doc
 
 ## It’s built using:
 🧩 SentenceTransformers for model training and embeddings
+
 ⚡ FastAPI for serving the search API
 🔍 Usearch for fast vector similarity retrieval
 📊 CoSQA dataset for model fine-tuning and evaluation
