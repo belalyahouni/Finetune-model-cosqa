@@ -1,6 +1,3 @@
-# Core Python environment
-python>=3.10
-
 # API and backend
 fastapi
 uvicorn[standard]
@@ -20,7 +17,6 @@ usearch
 # File handling & parsing
 PyMuPDF  # for PDF text extraction
 requests
-mimetypes
 
 # Visualization
 matplotlib
@@ -30,3 +26,5 @@ seaborn
 notebook
 jupyter
 ipywidgets
+
+accelerate>=0.26.0

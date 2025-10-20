@@ -103,3 +103,26 @@ This function:
 | `part_1.ipynb` | Client demo for uploading and searching documents using the API |
 | `part_2.ipynb` | Evaluation of search quality using CoSQA metrics                |
 | `part_3.ipynb` | Full fine-tuning + evaluation experiment                        |
+
+### ▶️ Running the Notebooks
+Use Jupyter Lab to go through the tasks step by step with the notebooks. Run them in order: `part_1.ipynb`, then `part_2.ipynb`, then `part_3.ipynb`.
+
+1) Launch Jupyter Lab from the project root
+```bash
+jupyter lab
+```
+
+2) Open and run `code/part_1.ipynb`
+- Ensure the API is running before executing cells in part 1:
+```bash
+cd code
+uvicorn main:app --reload --port 8080
+```
+
+3) Open and run `code/part_2.ipynb`
+- Evaluate retrieval metrics on the CoSQA setup.
+- Note: This notebook does not use the API. It imports and uses classes/methods directly from modules in `code/`.
+
+4) Open and run `code/part_3.ipynb`
+- Perform fine-tuning and end-to-end evaluation.
+- Note: This notebook does not use the API. It imports and uses classes/methods directly from modules in `code/`.
