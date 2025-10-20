@@ -58,7 +58,7 @@ Evaluate the model using Recall@10, MRR@10, and nDCG@10 (evaluate.py, part_2.ipy
 
 └── README.md 
 
-## ⚙️ Installation
+## ⚙️ Installation
 1. Clone the Repository
 
 git clone https://github.com/belalyahouni/ML-for-Context-in-AI-Assistant
