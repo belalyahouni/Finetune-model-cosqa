@@ -1,20 +1,32 @@
-# For the Web API
-fastapi[all]
-python-multipart
+# Core Python environment
+python>=3.10
 
-# For Embeddings and NLP
+# API and backend
+fastapi
+uvicorn[standard]
+pydantic
+typing-extensions
+
+# Machine Learning & NLP
+torch
+transformers
 sentence-transformers
-nltk
-
-# For Vector Search
+datasets
+numpy
+pandas
+tqdm
 usearch
 
-# For Reading Different File Types
-PyMuPDF
-python-docx
-
-# For the Demonstration Script/Notebook
+# File handling & parsing
+PyMuPDF  # for PDF text extraction
 requests
-jupyterlab
+mimetypes
 
-datasets
+# Visualization
+matplotlib
+seaborn
+
+# Jupyter & Development
+notebook
+jupyter
+ipywidgets
