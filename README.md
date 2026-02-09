@@ -1,6 +1,8 @@
 # Semantic Search Engine with SentenceTransformers and CoSQA Fine-Tuning
 This project implements a semantic search engine that allows users to upload documents (PDF or text) and perform natural language searches using a fine-tuned model.
 
+Note: Readme made with AI
+
 ## Built With
 - 🧩 SentenceTransformers for model training and embeddings
 - ⚡ FastAPI for serving the search API
